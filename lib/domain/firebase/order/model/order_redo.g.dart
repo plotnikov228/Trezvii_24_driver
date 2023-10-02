@@ -15,7 +15,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   paymentMethod: PaymentMethod.fromString((json['paymentMethod'] as dynamic) ?? CashPaymentMethod().toString()),
   wishes: json['wishes'],
   cancelReason: json['cancelReason'],
-  isPaid: json['isPaid'],
+  isPaid: (json['isPaid'] as dynamic)?? false,
   driverId: json['driverId'] as String?,
   startTime: DateTime.parse(json['startTime'] as String),
   orderForAnother: json['orderForAnother'] != null ? OrderForAnother.fromJson(json['orderForAnother']) : null, costInRub: double.parse(json['costInRub'].toString()),

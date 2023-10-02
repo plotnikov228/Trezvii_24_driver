@@ -361,3 +361,17 @@ class AddPriceMapState extends MapState {
   }
 
 }
+
+class EmergencyCancellationMapState extends MapState {
+  EmergencyCancellationMapState(
+      {super.status = Status.Success, super.message, super.exception});
+
+  @override
+  MapState copyWith({Status? status, String? exception, String? message}) {
+    return EmergencyCancellationMapState(
+        status: status ?? this.status,
+        message: message ?? this.message,
+        exception: exception ?? this.exception
+    );
+  }
+}

@@ -229,6 +229,8 @@ class OrderChangesFunctions {
       switch (currentOrder!.status) {
         case WaitingForOrderAcceptanceOrderStatus():
           bloc.add(GoMapEvent(WaitingForOrderAcceptanceMapState()));
+        case EmergencyCancellationOrderStatus():
+          bloc.add(GoMapEvent(EmergencyCancellationMapState()));
         case CancelledOrderStatus():
           bloc.add(GoMapEvent(CancelledOrderMapState()));
           mapBlocFunctions.mapFunctions.disposePositionStream();
