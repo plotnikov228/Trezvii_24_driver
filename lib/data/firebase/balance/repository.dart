@@ -15,35 +15,57 @@ class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
   final _orderRepo = OrderRepositoryImpl();
 
   @override
-  Future addSumToBalance ({required LocalOutputRequest localOutputRequest,required String id}) async {
-    final doc = _instance.collection(_balancesCollection).doc(id).collection(_balanceCollection).doc(localOutputRequest.orderId);
-    if(!(await doc.get()).exists) {
-      final order = await GetOrderById(_orderRepo).call(localOutputRequest.orderId);
-      if(!(order?.isPaid ?? true)) {
+  Future addSumToBalance(
+      {required LocalOutputRequest localOutputRequest,
+      required String id}) async {
+    final doc = _instance
+        .collection(_balancesCollection)
+        .doc(id)
+        .collection(_balanceCollection)
+        .doc(localOutputRequest.orderId);
+    if (!(await doc.get()).exists) {
+      final order =
+          await GetOrderById(_orderRepo).call(localOutputRequest.orderId);
+      if (!(order?.isPaid ?? true)) {
         final balance = BalanceModel(cost: order!.costInRub);
         await doc.set(balance.toJson());
-        await UpdateOrderById(_orderRepo)
-            .call(localOutputRequest.orderId, order.copyWith(isPaid: true));
       }
     }
   }
 
   @override
   Future<double> getBalance({required String id}) async {
-    final docs = await _instance.collection(_balanceCollection).doc(id).collection(_balancesCollection).get();
-    final balances = docs.docs.map((e) => BalanceModel.fromJson(e.data())).toList();
+    final docs = await _instance
+        .collection(_balanceCollection)
+        .doc(id)
+        .collection(_balancesCollection)
+        .get();
+    final balances =
+        docs.docs.map((e) => BalanceModel.fromJson(e.data())).toList();
     double balance = 0;
-    balances.map((e) => balance+=e.cost);
+    balances.map((e) => balance += e.cost);
     return balance;
   }
 
   @override
   Future resetTheBalance({required String id}) async {
-    final docs = await _instance.collection(_balanceCollection).doc(id).collection(_balancesCollection).get();
-    for(var item in docs.docs) {
-      await _instance.collection(_balanceCollection).doc(id).collection(_balancesCollection).doc(item.id).delete();
+    final docs = await _instance
+        .collection(_balanceCollection)
+        .doc(id)
+        .collection(_balancesCollection)
+        .get();
+    for (var item in docs.docs) {
+      GetOrderById(_orderRepo).call(item.id).then((value) async {
+        if (value != null) {
+          UpdateOrderById(_orderRepo).call(item.id, value);
+        }
+        await _instance
+            .collection(_balanceCollection)
+            .doc(id)
+            .collection(_balancesCollection)
+            .doc(item.id)
+            .delete();
+      });
     }
-
   }
-
 }

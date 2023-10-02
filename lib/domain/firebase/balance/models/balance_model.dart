@@ -3,7 +3,6 @@ part 'balance_model.g.dart';
 @JsonSerializable()
 class BalanceModel {
   final double cost;
-
   BalanceModel({required this.cost});
 
   factory BalanceModel.fromJson(Map<String, dynamic> json) => _$BalanceModelFromJson(json);
