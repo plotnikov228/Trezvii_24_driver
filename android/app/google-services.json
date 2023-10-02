@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "960187355480",
+    "project_id": "trezvii24-5531a",
+    "storage_bucket": "trezvii24-5531a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960187355480:android:15a31ffba8e57f3dbc552d",
+        "android_client_info": {
+          "package_name": "com.trezvii24.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "960187355480-65hvbq9mdrha3vjhndov0bkk6vb1t74q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trezvii24.app",
+            "certificate_hash": "4ce7651ef56a9844dbe9f186c101b4b5b61a3ef5"
+          }
+        },
+        {
+          "client_id": "960187355480-la76ibgvmmj1dt6djf8o1ntj6u6kleq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTMkM3i9YYJmzxO-CEVE63XvVjRWh-LAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "960187355480-la76ibgvmmj1dt6djf8o1ntj6u6kleq1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "960187355480-5kon8lb36ftu3rlobtikjn8l4dobkuit.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sober-driver-analog"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960187355480:android:eae2cfe4cd571959bc552d",
+        "android_client_info": {
+          "package_name": "com.trezvii24.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "960187355480-la76ibgvmmj1dt6djf8o1ntj6u6kleq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTMkM3i9YYJmzxO-CEVE63XvVjRWh-LAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "960187355480-la76ibgvmmj1dt6djf8o1ntj6u6kleq1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "960187355480-5kon8lb36ftu3rlobtikjn8l4dobkuit.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sober-driver-analog"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
