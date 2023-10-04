@@ -67,7 +67,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   Stream<DrivingRoute>? get routeStream =>
       _mapBlocFunctions!.mapFunctions.positionStream;
-
+  DrivingRoute? get lastRoute =>
+      _mapBlocFunctions!.mapFunctions.lastRoute;
   final mapCompleter = Completer<YandexMapController>();
 
   bool get orderInCompanyRange {
@@ -158,6 +159,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         emit(SelectOrderMapState(
             locality: _mapBlocFunctions!.orderFunctions.locality ?? '',
             orders: _mapBlocFunctions!.orderFunctions.availableOrders()));
+      }
+      if (event.newState is EmergencyCancellationMapState) {
+        emit(EmergencyCancellationMapState());
       }
       if (event.newState is SelectAddressesMapState) {
         event.newState as SelectAddressesMapState;

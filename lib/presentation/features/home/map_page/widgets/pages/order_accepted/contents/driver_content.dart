@@ -33,7 +33,8 @@ class OrderAcceptedDriverContent extends StatelessWidget {
           Text(bloc.fromAddress!.addressName)
         ],),
         const SizedBox(height: 10,),
-        routeCardWidget(bloc.routeStream!),
+        if(bloc.routeStream!=null)
+        routeCardWidget(bloc.routeStream!, lastRoute: bloc.lastRoute),
         Expanded(
           child: Align(
             alignment: Alignment.bottomCenter,

@@ -78,7 +78,7 @@ class OrderChangesFunctions {
     if (id != null && id == currentOrderId) {
       disposeOrderListener(id: id);
     }
-    if (!(listeners.map((e) => e.orderId).contains(id))) {
+    if (!(listeners.map((e) => e.orderId).contains(id ?? currentOrderId))) {
       final listener = SetChangesOrderListener(_orderRepo)
           .call(id ?? currentOrderId!)
           .listen((event) async {
@@ -167,6 +167,8 @@ class OrderChangesFunctions {
         id != null ? (await GetOrderById(_orderRepo).call(id))! : currentOrder!;
     await UpdateOrderById(_orderRepo).call(
         id ?? currentOrderId!, order.copyWith(status: CancelledOrderStatus()));
+    disposeOrderListener(id: id ?? currentOrderId!);
+
     if (id == currentOrderId) {
       currentOrder = null;
       currentOrderId = null;
@@ -230,14 +232,25 @@ class OrderChangesFunctions {
         case WaitingForOrderAcceptanceOrderStatus():
           bloc.add(GoMapEvent(WaitingForOrderAcceptanceMapState()));
         case EmergencyCancellationOrderStatus():
-          bloc.add(GoMapEvent(EmergencyCancellationMapState()));
-        case CancelledOrderStatus():
-          bloc.add(GoMapEvent(CancelledOrderMapState()));
           mapBlocFunctions.mapFunctions.disposePositionStream();
+          disposeOrderListener(id: id ?? currentOrderId!);
           activeOrders.removeWhere((element) => element.id == currentOrderId!);
+          mapBlocFunctions.balanceFunctions
+              .cancelRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          mapBlocFunctions.setDriverPosListener();
           currentOrder = null;
           currentOrderId = null;
-          bloc.add(RecheckOrderMapEvent());
+          bloc.add(GoMapEvent(EmergencyCancellationMapState()));
+        case CancelledOrderStatus():
+          mapBlocFunctions.mapFunctions.disposePositionStream();
+          disposeOrderListener(id: id ?? currentOrderId!);
+          activeOrders.removeWhere((element) => element.id == currentOrderId!);
+          mapBlocFunctions.balanceFunctions
+              .cancelRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          mapBlocFunctions.setDriverPosListener();
+          currentOrder = null;
+          currentOrderId = null;
+          bloc.add(GoMapEvent(CancelledOrderMapState()));
         case OrderCancelledByDriverOrderStatus():
           bloc.add(GoMapEvent(OrderCancelledByDriverMapState()));
         case OrderAcceptedOrderStatus():
@@ -250,6 +263,7 @@ class OrderChangesFunctions {
                 message:
                     'Водитель принял вашу заявку, за 30 минут до назначенного времени вы вернётесь в окно ожидания водителя')));
           } else {
+            mapBlocFunctions.disposeDriverPosListener();
             mapBlocFunctions.mapFunctions.initPositionStream(
                 driverMode: true,
                 to: bloc.fromAddress?.appLatLong,
@@ -258,6 +272,7 @@ class OrderChangesFunctions {
                   bloc.emit(bloc.state);
                   await UpdateOrderById(_orderRepo).call(currentOrderId!,
                       currentOrder!.copyWith(status: ActiveOrderStatus()));
+                  bloc.add(RecheckOrderMapEvent());
                 });
 
             bloc.setDriver(await GetDriverById(FirebaseAuthRepositoryImpl())
@@ -267,6 +282,8 @@ class OrderChangesFunctions {
         case SuccessfullyCompletedOrderStatus():
           mapBlocFunctions.balanceFunctions
               .completeRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          mapBlocFunctions.mapFunctions.disposePositionStream();
+          mapBlocFunctions.setDriverPosListener();
           bloc.add(GoMapEvent(OrderCompleteMapState()));
         case ActiveOrderStatus():
           mapBlocFunctions.mapFunctions.initPositionStream(
@@ -278,7 +295,7 @@ class OrderChangesFunctions {
                     currentOrderId!,
                     currentOrder!
                         .copyWith(status: SuccessfullyCompletedOrderStatus()));
-                bloc.add(RecheckOrderMapEvent());
+                bloc.add(GoMapEvent(OrderCompleteMapState()));
               });
           bloc.add(GoMapEvent(ActiveOrderMapState()));
       }

@@ -26,7 +26,7 @@ class MapFunctions {
   StreamSubscription<AppLatLong>? _currentPosition;
   StreamController<DrivingRoute>? _routeStream;
   Stream<DrivingRoute>? get positionStream => _routeStream?.stream;
-
+  DrivingRoute? lastRoute ;
   final _repo = MapRepositoryImpl();
   final _fbRepo = FirebaseAuthRepositoryImpl();
   void initPositionStream ({bool driverMode = false, AppLatLong? to, Function()? whenComplete}) {
@@ -35,12 +35,12 @@ class MapFunctions {
      print('changed position');
 
      if(to != null) {
-
         final routes = await GetRoutes(_repo)
             .call([event, to]);
-        print('from localities func - ${routes?.first.geometry.length}');
         try {
-          _routeStream!.add(routes!.first);
+          print('route');
+          lastRoute = routes!.first;
+          _routeStream!.add(routes.first);
         } catch(_) {
 
       }
@@ -52,6 +52,7 @@ class MapFunctions {
   void disposePositionStream () {
     if(_currentPosition != null) _currentPosition!.cancel();
     _currentPosition = null;
+    _routeStream?.close();
     _routeStream = null;
   }
 

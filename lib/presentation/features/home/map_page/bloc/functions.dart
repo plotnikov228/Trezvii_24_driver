@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:trezvii_24_driver/data/firebase/auth/repository.dart';
 import 'package:trezvii_24_driver/data/map/repository/repository.dart';
@@ -9,6 +11,7 @@ import 'package:trezvii_24_driver/presentation/features/home/map_page/bloc/funct
 import 'package:trezvii_24_driver/presentation/features/home/map_page/bloc/functions/order_changes_functions.dart';
 
 import '../../../../../domain/firebase/auth/usecases/update_driver.dart';
+import '../../../../../domain/map/models/app_lat_long.dart';
 import 'bloc/bloc.dart';
 import 'functions/balance_functions.dart';
 import 'functions/payments_functions.dart';
@@ -31,6 +34,8 @@ class MapBlocFunctions {
   late final MapFunctions mapFunctions;
   late final BalanceFunctions balanceFunctions;
 
+   Stream<AppLatLong> positionStream () => PositionStream(MapRepositoryImpl()).call();
+    StreamSubscription? positionSub;
   Future userInit () async {
     await addressesFunctions.init();
     await addressesFunctions.initLocalities();
@@ -43,10 +48,18 @@ class MapBlocFunctions {
       await addressesFunctions.initLocalities();
       print(' localities - ${addressesFunctions.localities}');
       await orderFunctions.initForDriver();
-      PositionStream(MapRepositoryImpl()).call().listen((event) {
-        UpdateDriver(FirebaseAuthRepositoryImpl()).call(FirebaseAuth.instance.currentUser!.uid, currentPosition: event);
-      });
+      balanceFunctions.init();
+      setDriverPosListener();
     }
+
+    void setDriverPosListener () => positionSub ??= positionStream().listen((event) {
+      UpdateDriver(FirebaseAuthRepositoryImpl()).call(FirebaseAuth.instance.currentUser!.uid, currentPosition: event);
+    });
+
+  void disposeDriverPosListener () {
+    positionSub?.cancel();
+    positionSub = null;
+  }
 }
 
 

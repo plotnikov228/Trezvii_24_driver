@@ -6,4 +6,6 @@ abstract class FirebaseBalanceRepository {
   Future addSumToBalance ({required LocalOutputRequest localOutputRequest,required String id});
 
   Future resetTheBalance ({required String id});
+
+  Future createWithdrawalRequest ();
 }

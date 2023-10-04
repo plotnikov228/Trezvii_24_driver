@@ -43,4 +43,7 @@ abstract class PaymentRepository {
   Future completeAOutputRequest({required LocalOutputRequest localOutputRequest});
 
   Future<List<LocalOutputRequest>> getRequests ();
+
+  Future cancelOutputRequest(
+      {required LocalOutputRequest localOutputRequest});
 }

@@ -306,6 +306,12 @@ class PaymentRepositoryImpl extends PaymentRepository {
     DBDelete(_dbRepo).call(DBConstants.localOutputRequests,
         localOutputRequest.toJson(), 'orderId');
   }
+  @override
+  Future cancelOutputRequest(
+      {required LocalOutputRequest localOutputRequest}) async {
+    await DBDelete(_dbRepo)
+        .call(DBConstants.localOutputRequests, localOutputRequest.toJson(), 'orderId');
+  }
 
   @override
   Future createALocalOutputRequest(

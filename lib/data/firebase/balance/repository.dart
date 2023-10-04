@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:trezvii_24_driver/data/auth/repository/repository.dart';
 import 'package:trezvii_24_driver/data/firebase/order/repository.dart';
+import 'package:trezvii_24_driver/domain/auth/usecases/get_user_id.dart';
 import 'package:trezvii_24_driver/domain/firebase/balance/models/balance_model.dart';
 import 'package:trezvii_24_driver/domain/firebase/order/usecases/get_order_by_id.dart';
 import 'package:trezvii_24_driver/domain/firebase/order/usecases/update_order_by_id.dart';
@@ -10,6 +12,7 @@ import '../../../domain/firebase/balance/repository.dart';
 class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
   final _balancesCollection = 'Balances';
   final _balanceCollection = 'Balance';
+  final _withdrawalRequestsCollections = 'WithdrawalRequests';
   final _instance = FirebaseFirestore.instance;
 
   final _orderRepo = OrderRepositoryImpl();
@@ -66,6 +69,18 @@ class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
             .doc(item.id)
             .delete();
       });
+    }
+  }
+
+  @override
+  Future createWithdrawalRequest() async {
+    final id = await GetUserId(AuthRepositoryImpl()).call();
+    final balance = await getBalance(id: id);
+    if (balance > 0) {
+      await _instance
+          .collection(_balanceCollection)
+          .doc(id)
+          .set({'cost': balance});
     }
   }
 }

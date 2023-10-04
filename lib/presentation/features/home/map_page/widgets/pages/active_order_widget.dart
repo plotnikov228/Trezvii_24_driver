@@ -31,7 +31,7 @@ class ActiveOrderWidget extends StatelessWidget {
           children: [
             const Text('Поездка началась', style: AppStyle.black17,),
             const SizedBox(height: 10,),
-            routeCardWidget(bloc.routeStream!, from: bloc.fromAddress, to: bloc.toAddress),
+            routeCardWidget(bloc.routeStream!, lastRoute: bloc.lastRoute, from: bloc.fromAddress, to: bloc.toAddress),
           ],
         ),
       ),

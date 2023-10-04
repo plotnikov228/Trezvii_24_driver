@@ -14,6 +14,7 @@ import 'package:trezvii_24_driver/domain/firebase/storage/usecases/upload_file_t
 import 'package:trezvii_24_driver/extensions/firebase_auth_exeption_extension.dart';
 import '../../../domain/auth/models/auth_type.dart';
 import '../../../domain/auth/repository/repository.dart';
+import '../../../domain/db/constants.dart';
 import '../../../domain/db/usecases/init_db.dart';
 import '../../../domain/firebase/auth/usecases/get_driver_by_id.dart';
 import '../../db/repository/repository.dart';
@@ -167,18 +168,18 @@ class AuthRepositoryImpl extends AuthRepository {
         }
 
         if (userModel != null) {
-          final db = await InitDB(_dbRepo).call();
           final inserUsecase = DBInsert(_dbRepo);
           final removeUsecase = DBDelete(_dbRepo);
-          final listUsers = await DBQuery(_dbRepo).call('user');
+
+          final listUsers = await DBQuery(_dbRepo).call(DBConstants.userTable);
           if (listUsers.isNotEmpty) {
             for (var item in listUsers) {
               await removeUsecase.call(
-                  'user', (item as UserModel).toJson(), 'userId');
+                  DBConstants.userTable, (item as UserModel).toJson(), 'userId');
             }
           }
           await AddUserToExisted(_repo).call(userModel);
-          await inserUsecase.call('user', userModel.toDB());
+          await inserUsecase.call(DBConstants.userTable, userModel.toDB());
         }
       }
       if (userModel == null) {

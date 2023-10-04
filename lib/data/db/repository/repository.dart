@@ -16,12 +16,12 @@ class DBRepositoryImpl extends DBRepository {
 
   @override
   Future<Database> initDB() async {
-    return _db ??= await _getDb();
+    _db ??= await _getDb();
+    return _db!;
   }
 
   void onCreate(Database db, int version) async {
-    db
-      ..execute('''
+    db..execute('''
     CREATE TABLE ${DBConstants.favoriteAddressesTable} (
       id INTEGER PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
@@ -30,11 +30,9 @@ class DBRepositoryImpl extends DBRepository {
       long INTEGER NOT NULL,
       entrance TEXT, 
       comment TEXT,
-      locality TEXT
-    );
-  ''')
-      ..execute('''
-    CREATE TABLE ${DBConstants.userTable} (
+      locality TEXT);
+      ''')..execute('''
+      CREATE TABLE ${DBConstants.userTable} (
       id INTEGER NOT NULL PRIMARY KEY,
       userId TEXT NOT NULL,
       number TEXT NOT NULL,
@@ -42,15 +40,13 @@ class DBRepositoryImpl extends DBRepository {
       name TEXT NOT NULL,
       registrationDate TEXT NOT NULL,
       bonuses INTEGER,
-      ratings TEXT NOT NULL,
-      );
-  ''')..execute('''
-    CREATE TABLE ${DBConstants.localOutputRequests} (
+      ratings TEXT NOT NULL
+      );''')..execute('''
+      CREATE TABLE ${DBConstants.localOutputRequests} (
       id INTEGER NOT NULL PRIMARY KEY,
       orderId TEXT NOT NULL,
-      paymentMethod TEXT NOT NULL,
-      );
-  ''');
+      paymentMethod TEXT NOT NULL
+      );''');
   }
 
   @override

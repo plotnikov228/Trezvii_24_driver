@@ -9,6 +9,7 @@ import 'package:trezvii_24_driver/domain/payment/usecases/create_a_local_output_
 import 'package:trezvii_24_driver/domain/payment/usecases/get_requests.dart';
 
 import '../../../../../../domain/payment/models/output_request.dart';
+import '../../../../../../domain/payment/usecases/cancel_output_request.dart';
 
 class BalanceFunctions {
   late final List<LocalOutputRequest> _requests;
@@ -34,5 +35,10 @@ class BalanceFunctions {
     await CreateALocalOutputRequest(_paymentRepo).call(localOutputRequest);
     _requests.add(localOutputRequest);
   }
+
+  Future cancelRequest(LocalOutputRequest localOutputRequest) async {
+  await CancelOutputRequest(_paymentRepo).call(localOutputRequest);
+  _requests.add(localOutputRequest);
+}
 
 }

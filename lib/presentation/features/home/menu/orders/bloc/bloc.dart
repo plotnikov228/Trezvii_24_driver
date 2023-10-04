@@ -25,7 +25,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
         _otherOrders = allOrders.where((element) =>
         element.order.status.toString() != OrderCancelledByDriverOrderStatus().toString() &&
             element.order.status.toString() != CancelledOrderStatus().toString() &&
-            element.order.status.toString() != SuccessfullyCompletedOrderStatus().toString())
+            element.order.status.toString() != SuccessfullyCompletedOrderStatus().toString() && element.order.status.toString() != EmergencyCancellationOrderStatus().toString())
             .toList();
 
       _completedOrders = allOrders
