@@ -39,6 +39,7 @@ class AppImages {
   static const support = 'assets/icons/support.svg';
   static const operator = 'assets/icons/operator.svg';
   static const location = 'assets/icons/location.svg';
+  static const cardFormBg = 'assets/images/card_form_bg.png';
 
 
   static const logo = 'assets/images/logo.PNG';

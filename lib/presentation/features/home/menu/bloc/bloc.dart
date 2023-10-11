@@ -23,7 +23,7 @@ import '../../../../../domain/payment/usecases/get_current_payment_ui_model.dart
 class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   String? _userPhotoUrl;
-  UserModel? _user;
+  UserModel? user;
 
   final _authRepo = AuthRepositoryImpl();
   final _firebaseAuthRepo = FirebaseAuthRepositoryImpl();
@@ -38,25 +38,25 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       final id = await GetUserId(_authRepo).call();
 
       final userFromDb = (await GetDriverById(_firebaseAuthRepo).call(id));
-        if(_user == null || (_user != null && _user!.name != userFromDb!.name || _user!.email != userFromDb!.email)) {
-        _user = userFromDb;
+        if(user == null || (user != null && user!.name != userFromDb!.name || user!.email != userFromDb!.email)) {
+        user = userFromDb;
         _paymentUiModel = await GetCurrentPaymentModel(_paymentRepo).call();
-          _userPhotoUrl = await GetPhotoById(FirebaseStorageRepositoryImpl()).call(_user!.userId);
+          _userPhotoUrl = await GetPhotoById(FirebaseStorageRepositoryImpl()).call(user!.userId);
 
 
         if (_userPhotoUrl == null) {
-          _user = (await GetDriverById(_firebaseAuthRepo).call(id));
+          user = (await GetDriverById(_firebaseAuthRepo).call(id));
           _userPhotoUrl =
-              (_user as Driver?)?.personalDataOfTheDriver?.driverPhotoUrl;
+              (user as Driver?)?.personalDataOfTheDriver?.driverPhotoUrl;
         }
 
         balance = await GetBonusesBalance(PaymentRepositoryImpl()).call();
-        print('username ${_user!.name}');
+        print('username ${user!.name}');
         emit(InitialMenuState(
-            userModel: _user, userUrl: _userPhotoUrl, bonuses: balance));
+            userModel: user, userUrl: _userPhotoUrl, bonuses: balance));
       } else {
           emit(InitialMenuState(
-              userModel: _user, userUrl: _userPhotoUrl, bonuses: balance));
+              userModel: user, userUrl: _userPhotoUrl, bonuses: balance));
         }
     });
 
@@ -67,7 +67,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   on<GoMenuEvent>((event, emit) {
     if(event.newState is InitialMenuState) {
       emit(InitialMenuState(
-          userModel: _user, userUrl: _userPhotoUrl, bonuses: balance));
+          userModel: user, userUrl: _userPhotoUrl, bonuses: balance));
     } else {
       emit(event.newState);
     }

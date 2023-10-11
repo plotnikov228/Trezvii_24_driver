@@ -35,14 +35,14 @@ class StartOrderWidget extends StatefulWidget {
 class _StartOrderWidgetState extends State<StartOrderWidget>{
   bool showContent = false;
 
-  final double initialHeight = size.height - 200;
-  double height = size.height - 200;
+  double initialHeight () => (widget.state as StartOrderDriverMapState).orderWithId == null ? 160 : size.height - 200;
+  double height =  size.height - 200;
   final double initialEndHeight = size.height - 100;
 
   @override
   void initState() {
     super.initState();
-    height = initialHeight;
+    height = initialHeight();
     Future.delayed(const Duration(milliseconds: 50), () {
       setState(() {
         showContent = true;
@@ -84,7 +84,7 @@ class _StartOrderWidgetState extends State<StartOrderWidget>{
             onPanUpdate: (_) {
               setState(() {
                 updatedPosition = Offset(0, startPosition.dy - _.globalPosition.dy);
-                height = initialHeight + updatedPosition.dy;
+                height = initialHeight() + updatedPosition.dy;
               });
               if (height == initialEndHeight) {
                 setState(() {
@@ -98,10 +98,10 @@ class _StartOrderWidgetState extends State<StartOrderWidget>{
               }
             },
             onPanEnd: (_) async {
-              if(height <= 160) {
+              if(height <= (size.height / 3 + 20) && (widget.state as StartOrderDriverMapState).orderWithId != null) {
                 height = 160;
               }
-              else if ((initialHeight - height).abs() > 100) {
+              else if (-(initialHeight() - height) > 70) {
                 height = initialEndHeight;
 
                 showContent = false;
@@ -110,7 +110,7 @@ class _StartOrderWidgetState extends State<StartOrderWidget>{
                   widget.bloc.add(GoMapEvent(SelectOrderMapState()));
                 });
               } else {
-                height = initialHeight;
+                height = initialHeight();
               }setState(() {
 
               });
@@ -118,7 +118,7 @@ class _StartOrderWidgetState extends State<StartOrderWidget>{
             child: AnimatedSize(
               duration: const Duration(milliseconds: 400),
               child: Container(
-                  height: height < initialHeight ? height < 160 ? 160 : height : height,
+                  height: height < initialHeight() ? height < 160 ? 160 : height : height,
                   width: size.width,
                   decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(

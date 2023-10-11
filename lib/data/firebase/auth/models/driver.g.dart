@@ -20,7 +20,7 @@ Driver _$DriverFromJson(Map<String, dynamic> json) => Driver(
       email: json['email'] as String,
       name: json['name'] as String,
       blocked: (json['blocked'] as dynamic) ?? false,
-      registrationDate: DateTime.parse(json['registrationDate'] as String),
+      registrationDate: json['registrationDate'] is String ? DateTime.parse(json['registrationDate'] as String) : (json['registrationDate'] as Timestamp).toDate(),
       personalDataOfTheDriver: json['personalDataOfTheDriver'] == null
           ? null
           : PersonalDataOfTheDriver.fromJson(
@@ -36,7 +36,7 @@ Map<String, dynamic> _$DriverToJson(Driver instance) => <String, dynamic>{
       'email': instance.email,
       'name': instance.name,
       'blocked': instance.blocked,
-      'registrationDate': instance.registrationDate.toIso8601String(),
+      'registrationDate': instance.registrationDate,
       'ratings': instance.ratings,
       'currentPosition': instance.currentPosition,
       'confirmed': instance.confirmed,

@@ -11,7 +11,7 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 import '../../../domain/payment/models/tariff.dart';
 
 class MapRepositoryImpl extends MapRepository {
-  static const defLocation = MoscowLocation();
+  static const defLocation = KrasnodarLocation();
   static const _lastLatKey = 'lastLatKey';
   static const _lastLongKey = 'lastLongKey';
   static const _locallyKey = 'locallyKey';
@@ -25,20 +25,24 @@ class MapRepositoryImpl extends MapRepository {
         .catchError((_) => false);
   }
 
+  @override
   Stream<AppLatLong> positionStream () {
     return Geolocator.getPositionStream(locationSettings:  const LocationSettings(
-        accuracy: LocationAccuracy.high,
+      accuracy: LocationAccuracy.low,
     )).map((value) => AppLatLong(lat: value.latitude, long: value.longitude));
   }
 
   @override
   Future<AppLatLong> getCurrentLocation() {
 
-    return Geolocator.getCurrentPosition(forceAndroidLocationManager: true,
-        desiredAccuracy: LocationAccuracy.medium).then((value) {
+    return Geolocator.getLastKnownPosition().then((value) async {
+      if(value == null) {
+        final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low, forceAndroidLocationManager: true);
+        return AppLatLong(lat: pos.latitude, long: pos.longitude);
+      }
       return AppLatLong(lat: value.latitude, long: value.longitude);
     }).catchError(
-      (_) => defLocation,
+          (_) => defLocation,
     );
   }
 
@@ -54,8 +58,9 @@ class MapRepositoryImpl extends MapRepository {
   @override
   Future<AppLatLong> getLastPoint() async {
     final prefs = await SharedPreferences.getInstance();
-    final lat = prefs.getDouble(_lastLatKey) ?? const MoscowLocation().lat;
-    final long = prefs.getDouble(_lastLongKey) ?? const MoscowLocation().long;
+    final curPos = await getCurrentLocation();
+    final lat = prefs.getDouble(_lastLatKey) ?? curPos.lat;
+    final long = prefs.getDouble(_lastLongKey) ?? curPos.long;
     return AppLatLong(lat: lat, long: long);
   }
 

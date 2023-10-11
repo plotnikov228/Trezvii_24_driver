@@ -22,7 +22,7 @@ class SelectOrderWidget extends StatefulWidget {
 class _SelectOrderWidgetState extends State<SelectOrderWidget>{
   final double initialHeight = size.height - 100;
   double height = size.height - 100;
-  final double initialEndHeight = size.height - 200;
+   double initialEndHeight () => widget.state.selectedOrder == null ? 160 : size.height - 200;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _SelectOrderWidgetState extends State<SelectOrderWidget>{
       onPanEnd: (_) async {
         setState(() {
           if ((initialHeight - height).abs() > 60) {
-            height = initialEndHeight;
+            height = initialEndHeight();
 
             showContent = false;
           } else {
@@ -88,7 +88,7 @@ class _SelectOrderWidgetState extends State<SelectOrderWidget>{
         child: AnimatedSize(
           duration: const Duration(milliseconds: 400),
           child: Container(
-            height: height < initialEndHeight ? initialEndHeight : height,
+            height: height < initialEndHeight() ? initialEndHeight() : height,
             width: size.width,
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -169,7 +169,7 @@ class _SelectOrderWidgetState extends State<SelectOrderWidget>{
                                                        child: InkWell(
                                                            onTap: () {
                                                              setState(() {
-                                                               height = initialEndHeight;
+                                                               height = initialEndHeight();
                                                                showContent = false;
                                                              });
                                                              Future.delayed(

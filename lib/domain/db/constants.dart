@@ -1,5 +1,7 @@
 class DBConstants {
   static const userTable  = 'user';
   static const favoriteAddressesTable = 'favoriteAddresses';
-  static const localOutputRequests = 'localOutputRequests';
+  static const localOutputRequestsTable = 'localOutputRequests';
+  static const cardsTable = 'cards';
+
 }

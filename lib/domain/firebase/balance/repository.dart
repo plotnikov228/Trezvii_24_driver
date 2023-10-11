@@ -1,5 +1,7 @@
 import 'package:trezvii_24_driver/domain/payment/models/output_request.dart';
 
+import '../../payment/models/card.dart';
+
 abstract class FirebaseBalanceRepository {
   Future<double> getBalance({required String id});
 
@@ -7,5 +9,5 @@ abstract class FirebaseBalanceRepository {
 
   Future resetTheBalance ({required String id});
 
-  Future createWithdrawalRequest ();
+  Future createWithdrawalRequest (UserCard card);
 }

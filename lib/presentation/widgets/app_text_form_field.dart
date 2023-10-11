@@ -12,7 +12,7 @@ Widget AppTextFormField(
   double height = 37,
   double? width,
   Function(String)? onChanged,
-  Function(String)? onSubmit,
+  Function(String)? onSubmit, bool showBorder = true,
   String hintText = 'Введите сообщение...',
   int? minLines,
   int? maxLength,
@@ -40,7 +40,7 @@ Widget AppTextFormField(
         cursorColor: AppColor.firstColor,
         cursorWidth: 2,
         cursorRadius: const Radius.circular(8),
-        style: AppStyle.black16,
+        style: AppStyle.black14,
         validator: validator,
         maxLength: maxLength,
         minLines: minLines,
@@ -57,21 +57,24 @@ Widget AppTextFormField(
           suffixIcon: suffixWidget,
           counterText: '',
           errorMaxLines: 2,
+          filled: true,
+          fillColor: Colors.white,
+
           errorStyle: AppStyle.black10.copyWith(color: AppColor.firstColor, fontSize: 0),
           disabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.lightGray, width: 1),
+              borderSide: BorderSide(color: showBorder ? AppColor.lightGray : Colors.transparent, width: 1),
               borderRadius: BorderRadius.circular(8)),
           enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.lightGray, width: 1),
+              borderSide: BorderSide(color: showBorder ?AppColor.lightGray  : Colors.transparent, width: 1),
               borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.firstColor, width: 1),
+              borderSide: BorderSide(color: showBorder ?AppColor.firstColor  : Colors.transparent, width: 1),
               borderRadius: BorderRadius.circular(8)),
           focusedErrorBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.red, width: 1),
+              borderSide: BorderSide(color: showBorder ? Colors.red  : Colors.transparent, width: 1),
               borderRadius: BorderRadius.circular(8)),
           errorBorder: OutlineInputBorder(
-              borderSide: const BorderSide(width: 1, color: Colors.red),
+              borderSide: BorderSide(width: 1, color: showBorder ? Colors.red  : Colors.transparent),
               borderRadius: BorderRadius.circular(8)),
         ),
       ),

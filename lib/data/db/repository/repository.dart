@@ -42,11 +42,16 @@ class DBRepositoryImpl extends DBRepository {
       bonuses INTEGER,
       ratings TEXT NOT NULL
       );''')..execute('''
-      CREATE TABLE ${DBConstants.localOutputRequests} (
+      CREATE TABLE ${DBConstants.localOutputRequestsTable} (
       id INTEGER NOT NULL PRIMARY KEY,
       orderId TEXT NOT NULL,
       paymentMethod TEXT NOT NULL
-      );''');
+      );''')..execute('''
+    CREATE TABLE ${DBConstants.cardsTable} (
+      id INTEGER NOT NULL PRIMARY KEY,
+      number TEXT NOT NULL
+      );
+  ''');;
   }
 
   @override

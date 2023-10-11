@@ -33,10 +33,15 @@ class MapFunctions {
     _routeStream = StreamController.broadcast();
     _currentPosition = PositionStream(_repo).call().listen((event) async {
      print('changed position');
-
+     print('to - $to');
      if(to != null) {
         final routes = await GetRoutes(_repo)
             .call([event, to]);
+        if((routes?.isEmpty ?? true)) {
+          final distance = Geolocator.distanceBetween(event.lat, event.long, to.lat, to.long);
+          if((distance) <= 50 && whenComplete != null) whenComplete();
+
+        }
         try {
           print('route');
           lastRoute = routes!.first;
@@ -57,7 +62,12 @@ class MapFunctions {
   }
 
   Future<AddressModel?> getCurrentAddress () async {
-      final pos = await Geolocator.getLastKnownPosition();
+    Position? pos;
+    try {
+       pos = await Geolocator.getLastKnownPosition();
+    } catch (_) {
+      pos = await Geolocator.getCurrentPosition(forceAndroidLocationManager: true, desiredAccuracy: LocationAccuracy.low);
+    }
       if(pos != null) {
         return await GetAddressFromPoint(_repo).call(AppLatLong(lat: pos.latitude, long: pos.longitude));
       }

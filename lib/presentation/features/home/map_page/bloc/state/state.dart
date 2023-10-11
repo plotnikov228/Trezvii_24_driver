@@ -95,13 +95,15 @@ class SelectAddressesMapState extends MapState {
 class SelectOrderMapState extends MapState {
   final Stream<List<OrderWithId>>? orders;
   final String locality;
-  SelectOrderMapState( {this.locality = '',super.status = Status.Success, super.exception, this.orders, super.message});
+  final OrderWithId? selectedOrder;
+  SelectOrderMapState( {this.locality = '',super.status = Status.Success, super.exception, this.orders, super.message, this.selectedOrder});
 
   @override
-  SelectOrderMapState copyWith({Status? status, String? exception, Stream<List<OrderWithId>>? orders, String? locality, String? message}) {
+  SelectOrderMapState copyWith({Status? status, String? exception, Stream<List<OrderWithId>>? orders, String? locality, String? message, OrderWithId? selectedOrder}) {
     return SelectOrderMapState(
         locality: locality ?? this.locality,
         message: message ?? this.message,
+        selectedOrder: selectedOrder ?? this.selectedOrder,
         status: status ?? this.status, exception: exception ?? this.exception, orders: orders ?? this.orders);
   }
 

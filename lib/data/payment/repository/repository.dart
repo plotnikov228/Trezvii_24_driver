@@ -303,26 +303,26 @@ class PaymentRepositoryImpl extends PaymentRepository {
       await UpdateOrderById(_orderRepo)
           .call(localOutputRequest.orderId, order.copyWith(isPaid: true));
     }
-    DBDelete(_dbRepo).call(DBConstants.localOutputRequests,
+    DBDelete(_dbRepo).call(DBConstants.localOutputRequestsTable,
         localOutputRequest.toJson(), 'orderId');
   }
   @override
   Future cancelOutputRequest(
       {required LocalOutputRequest localOutputRequest}) async {
     await DBDelete(_dbRepo)
-        .call(DBConstants.localOutputRequests, localOutputRequest.toJson(), 'orderId');
+        .call(DBConstants.localOutputRequestsTable, localOutputRequest.toJson(), 'orderId');
   }
 
   @override
   Future createALocalOutputRequest(
       {required LocalOutputRequest localOutputRequest}) async {
     await DBInsert(_dbRepo)
-        .call(DBConstants.localOutputRequests, localOutputRequest.toJson());
+        .call(DBConstants.localOutputRequestsTable, localOutputRequest.toJson());
   }
 
   @override
   Future<List<LocalOutputRequest>> getRequests() async {
-    return (await DBQuery(_dbRepo).call(DBConstants.localOutputRequests))
+    return (await DBQuery(_dbRepo).call(DBConstants.localOutputRequestsTable))
         .map((e) => LocalOutputRequest.fromJson(e))
         .toList();
   }

@@ -44,4 +44,6 @@ class AppColor {
 
   static final textTabColor = _fromHex('#777777');
 
+  static final fleshColor = _fromHex('#F5D3BB');
+
 }

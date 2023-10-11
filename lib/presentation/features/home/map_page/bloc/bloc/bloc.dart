@@ -16,6 +16,7 @@ import 'package:trezvii_24_driver/domain/firebase/chat/usecases/find_chat.dart';
 import 'package:trezvii_24_driver/domain/firebase/order/usecases/update_order_by_id.dart';
 import 'package:trezvii_24_driver/domain/firebase/storage/usecases/get_photo_by_id.dart';
 import 'package:trezvii_24_driver/domain/map/models/app_lat_long.dart';
+import 'package:trezvii_24_driver/domain/map/usecases/get_last_point.dart';
 import 'package:trezvii_24_driver/domain/map/usecases/get_routes.dart';
 import 'package:trezvii_24_driver/domain/payment/enums/payment_types.dart';
 import 'package:trezvii_24_driver/domain/payment/models/payment_ui_model.dart';
@@ -128,6 +129,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   MapBloc(super.initialState) {
     _mapBlocFunctions = MapBlocFunctions(this);
     on<InitMapBloc>((event, emit) async {
+        _cameraPosition = CameraPosition(target: (await GetLastPoint(_mapRepo).call()).toPoint());
+        emit(state);
         await _mapBlocFunctions!.driverInit();
     });
 
@@ -157,6 +160,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       }
       if (event.newState is SelectOrderMapState) {
         emit(SelectOrderMapState(
+          selectedOrder: _mapBlocFunctions!.orderFunctions.currentOrder == null? null : OrderWithId(_mapBlocFunctions!.orderFunctions.currentOrder!, _mapBlocFunctions!.orderFunctions.currentOrderId!),
             locality: _mapBlocFunctions!.orderFunctions.locality ?? '',
             orders: _mapBlocFunctions!.orderFunctions.availableOrders()));
       }
@@ -237,7 +241,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             (await GetDriverById(_fbAuthRepo).call(_driver!.userId) as Driver)
                 .currentPosition;
         final route = (await GetRoutes(_mapRepo).call([
-          driverPosition ?? const MoscowLocation(),
+          driverPosition ?? const KrasnodarLocation(),
           fromAddress!.appLatLong
         ]))!
             .first;

@@ -8,6 +8,7 @@ import 'package:trezvii_24_driver/domain/firebase/order/usecases/update_order_by
 import 'package:trezvii_24_driver/domain/payment/models/output_request.dart';
 
 import '../../../domain/firebase/balance/repository.dart';
+import '../../../domain/payment/models/card.dart';
 
 class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
   final _balancesCollection = 'Balances';
@@ -39,14 +40,17 @@ class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
   @override
   Future<double> getBalance({required String id}) async {
     final docs = await _instance
-        .collection(_balanceCollection)
-        .doc(id)
         .collection(_balancesCollection)
+        .doc(id)
+        .collection(_balanceCollection)
         .get();
+    print('balance ${docs.docs.map((e) => e.data())}');
     final balances =
         docs.docs.map((e) => BalanceModel.fromJson(e.data())).toList();
     double balance = 0;
-    balances.map((e) => balance += e.cost);
+    for(var item in balances) {
+      balance += item.cost;
+    }
     return balance;
   }
 
@@ -73,14 +77,17 @@ class FirebaseBalanceRepositoryImpl extends FirebaseBalanceRepository {
   }
 
   @override
-  Future createWithdrawalRequest() async {
+  Future createWithdrawalRequest(UserCard card) async {
     final id = await GetUserId(AuthRepositoryImpl()).call();
     final balance = await getBalance(id: id);
     if (balance > 0) {
       await _instance
-          .collection(_balanceCollection)
+          .collection(_withdrawalRequestsCollections)
           .doc(id)
-          .set({'cost': balance});
+          .set({'cost': balance,
+              'cardNumber': card.number,
+        'time': DateTime.now()
+      });
     }
   }
 }

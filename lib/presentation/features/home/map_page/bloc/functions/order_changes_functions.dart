@@ -234,9 +234,12 @@ class OrderChangesFunctions {
         case EmergencyCancellationOrderStatus():
           mapBlocFunctions.mapFunctions.disposePositionStream();
           disposeOrderListener(id: id ?? currentOrderId!);
-          activeOrders.removeWhere((element) => element.id == currentOrderId!);
-          mapBlocFunctions.balanceFunctions
+
+          if(mapBlocFunctions.balanceFunctions.requests.isNotEmpty) {
+            activeOrders.removeWhere((element) => element.id == currentOrderId!);
+            mapBlocFunctions.balanceFunctions
               .cancelRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          }
           mapBlocFunctions.setDriverPosListener();
           currentOrder = null;
           currentOrderId = null;
@@ -244,9 +247,12 @@ class OrderChangesFunctions {
         case CancelledOrderStatus():
           mapBlocFunctions.mapFunctions.disposePositionStream();
           disposeOrderListener(id: id ?? currentOrderId!);
-          activeOrders.removeWhere((element) => element.id == currentOrderId!);
-          mapBlocFunctions.balanceFunctions
-              .cancelRequest(mapBlocFunctions.balanceFunctions.requests.last);
+
+          if(mapBlocFunctions.balanceFunctions.requests.isNotEmpty) {
+            activeOrders.removeWhere((element) => element.id == currentOrderId!);
+            mapBlocFunctions.balanceFunctions
+                .cancelRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          }
           mapBlocFunctions.setDriverPosListener();
           currentOrder = null;
           currentOrderId = null;
@@ -257,16 +263,16 @@ class OrderChangesFunctions {
           var diff = currentOrder!.startTime.difference(DateTime.now());
           if (diff.inHours >= 1) {
             goToAcceptedInFuture(
-                currentOrder!, Duration(minutes: diff.inMinutes - 31),
-                onRetry: const Duration(minutes: 15));
+                currentOrder!, Duration(minutes: diff.inMinutes - 61),
+                onRetry: const Duration(minutes: 30));
             bloc.add(GoMapEvent(StartOrderMapState(
                 message:
-                    'Водитель принял вашу заявку, за 30 минут до назначенного времени вы вернётесь в окно ожидания водителя')));
+                    'Вы приняли заявку, вы вернётесь к текущей заявке за час до её начала')));
           } else {
             mapBlocFunctions.disposeDriverPosListener();
             mapBlocFunctions.mapFunctions.initPositionStream(
                 driverMode: true,
-                to: bloc.fromAddress?.appLatLong,
+                to: bloc.fromAddress!.appLatLong,
                 whenComplete: () async {
                   mapBlocFunctions.mapFunctions.disposePositionStream();
                   bloc.emit(bloc.state);
@@ -280,8 +286,10 @@ class OrderChangesFunctions {
             bloc.add(GoMapEvent(OrderAcceptedMapState()));
           }
         case SuccessfullyCompletedOrderStatus():
-          mapBlocFunctions.balanceFunctions
+          if(mapBlocFunctions.balanceFunctions.requests.isNotEmpty) {
+            mapBlocFunctions.balanceFunctions
               .completeRequest(mapBlocFunctions.balanceFunctions.requests.last);
+          }
           mapBlocFunctions.mapFunctions.disposePositionStream();
           mapBlocFunctions.setDriverPosListener();
           bloc.add(GoMapEvent(OrderCompleteMapState()));
@@ -408,9 +416,11 @@ class OrderChangesFunctions {
                 exception: 'Заказ был взят другим водителем',
                 status: Status.Failed));
           } else {
-            mapBlocFunctions.balanceFunctions.createRequest(LocalOutputRequest(
+            if(val.paymentMethod is CardPaymentMethod) {
+              mapBlocFunctions.balanceFunctions.createRequest(LocalOutputRequest(
                 orderId: currentOrderId!,
                 paymentMethod: currentOrder!.paymentMethod));
+            }
             UpdateOrderById(_orderRepo)
                 .call(
                     currentOrderId!,
