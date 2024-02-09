@@ -217,8 +217,9 @@ class OrderAcceptedMapState extends MapState {
   final Driver? driver;
   final Duration? waitingTime;
   final String? distance;
+  final String? orderId;
 
-  OrderAcceptedMapState({this.distance, this.driver, this.waitingTime, exception, status = Status.Success, super.message})
+  OrderAcceptedMapState( {this.orderId,this.distance, this.driver, this.waitingTime, exception, status = Status.Success, super.message})
       : super(exception: exception, status: status);
 
   @override

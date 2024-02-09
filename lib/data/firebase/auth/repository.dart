@@ -92,6 +92,7 @@ class FirebaseAuthRepositoryImpl extends FirebaseAuthRepository {
         AppLatLong? currentPosition,
         Car? car,
         PersonalDataOfTheDriver? personalDataOfTheDriver,
+        bool? blocked,
         List<double>? ratings,
         }) async {
     Map<String, dynamic> mapForUpdate = {};
@@ -100,6 +101,7 @@ class FirebaseAuthRepositoryImpl extends FirebaseAuthRepository {
     if(name != null) mapForUpdate['name'] = name;
     if(currentPosition != null) mapForUpdate['currentPosition'] = currentPosition.toJson();
     if(car != null) mapForUpdate['car'] = car.toJson();
+    if(blocked != null) mapForUpdate['blocked'] = blocked;
     if(personalDataOfTheDriver != null) mapForUpdate['personalDataOfTheDriver'] = personalDataOfTheDriver.toJson();
     if(ratings != null) mapForUpdate['ratings'] = ratings;
     await _instance.collection(_driversCollection).doc(id).update(mapForUpdate);

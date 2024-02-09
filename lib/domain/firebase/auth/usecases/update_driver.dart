@@ -15,6 +15,7 @@ class UpdateDriver {
     String? name,
     AppLatLong? currentPosition,
     Car? car,
+    bool? blocked,
     PersonalDataOfTheDriver? personalDataOfTheDriver,
     List<double>? ratings,
   }) async =>
@@ -24,6 +25,7 @@ class UpdateDriver {
           email: email,
           currentPosition: currentPosition,
           car: car,
+          blocked: blocked,
           personalDataOfTheDriver: personalDataOfTheDriver,
           ratings: ratings);
 }

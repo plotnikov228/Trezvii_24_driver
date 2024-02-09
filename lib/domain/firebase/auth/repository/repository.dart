@@ -25,6 +25,7 @@ abstract class FirebaseAuthRepository {
   Future updateDriver(String id,{
     String? number,
     String? email,
+    bool? blocked,
     String? name,
     AppLatLong? currentPosition,
     Car? car,

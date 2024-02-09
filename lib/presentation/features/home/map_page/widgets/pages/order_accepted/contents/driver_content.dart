@@ -35,6 +35,7 @@ class OrderAcceptedDriverContent extends StatelessWidget {
         const SizedBox(height: 10,),
         if(bloc.routeStream!=null)
         routeCardWidget(bloc.routeStream!, lastRoute: bloc.lastRoute),
+
         Expanded(
           child: Align(
             alignment: Alignment.bottomCenter,
@@ -43,8 +44,7 @@ class OrderAcceptedDriverContent extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {
-                      bloc.add(GoMapEvent(CancelledOrderMapState()));
-                    }, icon: Icon(Icons.close, color:  AppColor.firstColor, size: 30,)),
+                          bloc.add(CancelOrderMapEvent((bloc.state as OrderAcceptedMapState).orderId,''));                    }, icon: Icon(Icons.close, color:  AppColor.firstColor, size: 30,)),
                 IconButton(
                     onPressed: () {
                       //some func

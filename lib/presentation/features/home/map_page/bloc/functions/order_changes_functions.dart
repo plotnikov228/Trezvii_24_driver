@@ -82,7 +82,7 @@ class OrderChangesFunctions {
       final listener = SetChangesOrderListener(_orderRepo)
           .call(id ?? currentOrderId!)
           .listen((event) async {
-        if ((order ?? currentOrder!).status != event?.status && event != null) {
+        if ((order ?? currentOrder!).status != event?.status && ((event?.status.stage() ?? 0 )>=( currentOrder?.status.stage() ?? 0))  && event != null) {
           if (order == null) {
             currentOrder = event;
           } else {
@@ -162,11 +162,11 @@ class OrderChangesFunctions {
 
   Future cancelCurrentOrder(String? id, String reason) async {
     currentOrder = currentOrder!
-        .copyWith(status: CancelledOrderStatus(), cancelReason: reason);
+        .copyWith(status: OrderCancelledByDriverOrderStatus(), cancelReason: 'Водитель отмпенил заказ');
     final order =
         id != null ? (await GetOrderById(_orderRepo).call(id))! : currentOrder!;
     await UpdateOrderById(_orderRepo).call(
-        id ?? currentOrderId!, order.copyWith(status: CancelledOrderStatus()));
+        id ?? currentOrderId!, order.copyWith(status: OrderCancelledByDriverOrderStatus()));
     disposeOrderListener(id: id ?? currentOrderId!);
 
     if (id == currentOrderId) {
@@ -229,7 +229,11 @@ class OrderChangesFunctions {
     if (currentOrder != null) {
       print('currentOrder != null');
       switch (currentOrder!.status) {
-        case WaitingForOrderAcceptanceOrderStatus():
+        case OrderCancelledByDriverOrderStatus():
+      bloc.add(GoMapEvent(StartOrderMapState()));
+      mapBlocFunctions.setDriverPosListener();
+
+      case WaitingForOrderAcceptanceOrderStatus():
           bloc.add(GoMapEvent(WaitingForOrderAcceptanceMapState()));
         case EmergencyCancellationOrderStatus():
           mapBlocFunctions.mapFunctions.disposePositionStream();
@@ -275,10 +279,13 @@ class OrderChangesFunctions {
                 to: bloc.fromAddress!.appLatLong,
                 whenComplete: () async {
                   mapBlocFunctions.mapFunctions.disposePositionStream();
-                  bloc.emit(bloc.state);
+
                   await UpdateOrderById(_orderRepo).call(currentOrderId!,
                       currentOrder!.copyWith(status: ActiveOrderStatus()));
-                  bloc.add(RecheckOrderMapEvent());
+                  Future.delayed(Duration(seconds: 1), () {
+                    bloc.add(RecheckOrderMapEvent());
+
+                  });
                 });
 
             bloc.setDriver(await GetDriverById(FirebaseAuthRepositoryImpl())
@@ -294,18 +301,19 @@ class OrderChangesFunctions {
           mapBlocFunctions.setDriverPosListener();
           bloc.add(GoMapEvent(OrderCompleteMapState()));
         case ActiveOrderStatus():
+          bloc.add(GoMapEvent(ActiveOrderMapState()));
           mapBlocFunctions.mapFunctions.initPositionStream(
               driverMode: true,
               to: bloc.toAddress!.appLatLong,
               whenComplete: () async {
+                mapBlocFunctions.mapFunctions.disposePositionStream();
                 print('when colmplete on active status');
-                UpdateOrderById(_orderRepo).call(
+                await UpdateOrderById(_orderRepo).call(
                     currentOrderId!,
                     currentOrder!
-                        .copyWith(status: SuccessfullyCompletedOrderStatus()));
-                bloc.add(GoMapEvent(OrderCompleteMapState()));
+                        .copyWith(status: SuccessfullyCompletedOrderStatus())).then((value) => bloc.add(GoMapEvent(OrderCompleteMapState())));
+
               });
-          bloc.add(GoMapEvent(ActiveOrderMapState()));
       }
     }
   }
@@ -399,6 +407,21 @@ class OrderChangesFunctions {
       bloc.setDriver(null);
     }
     bloc.add(RecheckOrderMapEvent());
+  }
+
+  Future emergenceCancel () async {
+    await UpdateOrderById(_orderRepo).call(currentOrderId!, currentOrder!.copyWith(status: EmergencyCancellationOrderStatus()));
+    GetYourOrders(_orderRepo).call().then((value) async {
+      final cancelledOrders = value.where((element) => element.order.status is EmergencyCancellationOrderStatus).toList();
+      if(cancelledOrders.length >= 3) UpdateDriver(_fbAuthRepo).call(await GetUserId(AuthRepositoryImpl()).call(), blocked: true);
+    });
+    currentOrder = null;
+    currentOrderId = null;
+    bloc.setDriver(null);
+    bloc.toAddress = null;
+    bloc.fromAddress = null;
+    bloc.currentRoute = null;
+    bloc.add(GoMapEvent(EmergencyCancellationMapState()));
   }
 
   void proceedOrder() async {

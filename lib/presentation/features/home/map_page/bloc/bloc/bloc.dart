@@ -247,6 +247,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             .first;
         print(route.metadata.weight.timeWithTraffic.value! ~/ 60);
         emit(OrderAcceptedMapState(
+          orderId: _mapBlocFunctions?.orderFunctions.currentOrderId,
             status: event.newState.status,
             distance: route.metadata.weight.distance.text,
             driver: _driver,
@@ -358,6 +359,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       await _mapBlocFunctions!.orderFunctions.recheckOrderStatus();
     });
 
+    on<EmergencyCancelMapEvent>((event, emit) async {
+      await _mapBlocFunctions!.orderFunctions.emergenceCancel();
+    });
+
     on<OnPaymentTapMapEvent>((event, emit) async {
       switch (event.paymentUiModel.paymentType) {
         case PaymentTypes.promo:
@@ -421,6 +426,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     });
 
     on<CancelOrderMapEvent>((event, emit) async {
+      emit(state.copyWith(message: 'При слишком частой отмене заказов, вас могут снять с линии'));
       await _mapBlocFunctions!.orderFunctions
           .cancelCurrentOrder(event.id, event.reason);
       add(RecheckOrderMapEvent());
