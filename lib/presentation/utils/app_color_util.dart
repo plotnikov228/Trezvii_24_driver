@@ -28,9 +28,9 @@ class AppColor {
 
   static final grayForText = _fromHex('#C8C7CC');
 
-  static final yellow = _fromHex('#F0C414');
+  static final yellow = Colors.black;
 
-  static final lightOrange = _fromHex('#FFB800');
+  static final lightOrange = Colors.black54;
 
   static final darkBlue = _fromHex('#242E42');
 

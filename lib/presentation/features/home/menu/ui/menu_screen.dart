@@ -118,6 +118,7 @@ class MenuScreen extends StatelessWidget {
                             AppImages.time,
                             width: 25,
                             height: 25,
+                            color: AppColor.firstColor,
                           ),
                           onTap: () => bloc
                               .add(GoMenuEvent(newState: OrdersMenuState()))),
@@ -160,6 +161,7 @@ class MenuScreen extends StatelessWidget {
             ],
           ),
         ),
+        if(false)
         Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

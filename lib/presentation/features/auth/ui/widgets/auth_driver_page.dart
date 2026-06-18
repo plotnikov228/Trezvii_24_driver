@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trezvii_24_driver/presentation/features/auth/bloc/bloc.dart';
 import 'package:trezvii_24_driver/presentation/features/auth/bloc/event.dart';
@@ -32,10 +33,19 @@ class AuthDriverPage extends StatelessWidget {
           key: key,
           child: Column(
             children: [
-              SizedBox(
-                height: 274,
+              Padding(
+                padding: const EdgeInsets.all(40.0),
                 child: Center(
-                  child: Image.asset(AppImages.logo, width: 200, height: 200,)
+                  child: Container(
+                    height: size.width / 2,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white)
+                    ),
+                    child: Center(child: Text('T', style: TextStyle(fontSize: 70, color: Colors.white, fontWeight: FontWeight.w800),)) /*Center(
+                      child: Image.asset(AppImages.logo, width: 200, height: 200,)
+                    )*/,
+                  ),
                 ),
               ),
               Container(
